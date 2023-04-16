@@ -16,24 +16,9 @@ const app = express();
 //help app to understand json
 app.use(express.json());
 
-/* req - reques, res - response */
-app.get('/', (req, res) => {
-    res.send("hello world!!!");
-});
 
 app.post("/auth/login", (req, res) => {
-    console.log(req.body);
-
-    //token encryption
-    const token = jwt.sign({
-        email: req.body.email,
-        fullName: "Andrew"
-    }, "secret123");
-
-    res.json({
-        succes: true,
-        token
-    })
+    
 });
 
 
