@@ -1,5 +1,6 @@
 // for back
 import express from "express";
+
 //coonect to mongoDB
 import mongoose from "mongoose";
 mongoose
@@ -16,6 +17,26 @@ import checkAuth from "./utils/checkAuth.js"
 const app = express();
 //help app to understand json
 app.use(express.json());
+//
+app.use('/uploads', express.static('uploads'))
+
+//for dowlanding images
+import multer from "multer";
+const storage = multer.diskStorage({
+    destination: (_, __, callBack) => {   //puth for file
+        callBack(null, 'uploads');
+    },
+    filename: (_, file, callBack) => {  //file name
+        callBack(null, file.originalname);
+    },
+});
+const upload = multer({ storage });
+app.post("/upload", checkAuth, upload.single('image'), (req,res) => {
+    res.json({
+        url: `/uploads/${req.file.originalname}`
+    })
+})
+
 
 //post for login
 app.post("/auth/login", loginValidation, UserController.login);
@@ -29,7 +50,7 @@ app.get( "/posts", PostController.getAll );
 app.get( "/posts/:id", PostController.getOne );
 app.post( "/posts", checkAuth, postCreateValidation ,PostController.create );
 app.delete( "/posts/:id", checkAuth, PostController.remove );
-app.patch( "/posts/:id", checkAuth, PostController.update );
+app.patch( "/posts/:id", checkAuth, postCreateValidation, PostController.update );
 
 
 
