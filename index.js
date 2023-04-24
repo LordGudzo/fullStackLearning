@@ -1,5 +1,7 @@
 // for back
 import express from "express";
+//allows another domens to do request to this backend
+import cors from 'cors';
 //coonect to mongoDB
 import mongoose from "mongoose";
 mongoose
@@ -19,7 +21,9 @@ const app = express();
 //help app to understand json
 app.use(express.json());
 //help app to check uploads field when get request for /uploads
-app.use('/uploads', express.static('uploads'))
+app.use('/uploads', express.static('uploads'));
+//allows another domens to do request to this backend
+app.use(cors())
 
 //for dowlanding images
 import multer from "multer";
