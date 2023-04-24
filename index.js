@@ -1,6 +1,5 @@
 // for back
 import express from "express";
-
 //coonect to mongoDB
 import mongoose from "mongoose";
 mongoose
@@ -9,15 +8,17 @@ mongoose
     .catch((err) => console.log('DB error', err));
 //validation block
 import { registerValidation, loginValidation, postCreateValidation } from "./validations.js";
-import * as UserController from "./controllers/UserController.js";
-import * as PostController from "./controllers/PostController.js";
 
-import checkAuth from "./utils/checkAuth.js"
+//logical for req, res
+import { UserController, PostController } from "./controllers/index.js";
+//utils
+import { checkAuth, handleValidationErrors } from "./utils/index.js";
+
 
 const app = express();
 //help app to understand json
 app.use(express.json());
-//
+//help app to check uploads field when get request for /uploads
 app.use('/uploads', express.static('uploads'))
 
 //for dowlanding images
@@ -39,24 +40,24 @@ app.post("/upload", checkAuth, upload.single('image'), (req,res) => {
 
 
 //post for login
-app.post("/auth/login", loginValidation, UserController.login);
+app.post("/auth/login", loginValidation, handleValidationErrors , UserController.login);
 //post for registration
-app.post("/auth/register", registerValidation, UserController.register );
+app.post("/auth/register", registerValidation, handleValidationErrors, UserController.register );
 //gets information about user, needs token
 app.get("/auth/me", checkAuth, UserController.getMe );
 
 
 app.get( "/posts", PostController.getAll );
 app.get( "/posts/:id", PostController.getOne );
-app.post( "/posts", checkAuth, postCreateValidation ,PostController.create );
+app.post( "/posts", checkAuth, postCreateValidation, handleValidationErrors, PostController.create );
 app.delete( "/posts/:id", checkAuth, PostController.remove );
-app.patch( "/posts/:id", checkAuth, postCreateValidation, PostController.update );
+app.patch( "/posts/:id", checkAuth, postCreateValidation, handleValidationErrors, PostController.update );
 
 
 
 
 
-//add port
+//add port 4444
 app.listen(4444, (err) => {
     if (err) {
         return console.log(err)
